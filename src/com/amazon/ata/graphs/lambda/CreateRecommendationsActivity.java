@@ -8,10 +8,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
 import com.amazonaws.services.lambda.runtime.Context;
 
 import java.security.InvalidParameterException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CreateRecommendationsActivity {
@@ -29,7 +26,7 @@ public class CreateRecommendationsActivity {
                 throw new InvalidParameterException("Invalid input: username and limit must be provided.");
             }
         List<Recommendation> recommendations = new ArrayList<>();
-        PaginatedQueryList<FollowEdge> followEdgePaginatedQueryList = this.followEdgeDao.getAllFollows(input.getUsername())
+        PaginatedQueryList<FollowEdge> followEdgePaginatedQueryList = this.followEdgeDao.getAllFollows(input.getUsername());
                 List<String> follows = followEdgePaginatedQueryList.stream()
                         .map(FollowEdge::getToUsername)
                         .collect(Collectors.toList());
@@ -44,7 +41,7 @@ public class CreateRecommendationsActivity {
                             .collect(Collectors.toList());
 
                     for (String followsFollow : followsFollows) {
-                        if (followsFollow != input.getUsername()) {
+                        if (!Objects.equals(followsFollow, input.getUsername())) {
                             && !follows.contains(followsFollow))
                             && !recommendations.contains(followsFollow)
                                     recommendations.add(new Recommendation(input.getUsername(), followsFollow, status.ACTIVE));
